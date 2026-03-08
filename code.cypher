@@ -56,3 +56,23 @@ MERGE (u)-[:LISTENS {tempo: toInteger(rand()*300)}]->(m)
 
 
 
+// codigo para gerar recomendacao
+MATCH (u:User {name:"alara"})-[:LISTENS]->(m:Music)
+
+OPTIONAL MATCH (m)-[:HAS_GENRE]->(g:Genre)
+OPTIONAL MATCH (m)<-[:COMPOSED]-(a:Artist)
+
+MATCH (rec:Music)
+
+WHERE
+(rec)-[:HAS_GENRE]->(g)
+OR
+(a)-[:COMPOSED]->(rec)
+
+AND NOT (u)-[:LISTENS]->(rec)
+
+RETURN rec.name, count(*) AS score
+ORDER BY score DESC
+LIMIT 10
+
+
